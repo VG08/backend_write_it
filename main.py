@@ -195,7 +195,7 @@ async def read_post(post_id: int, db: Session = Depends(get_db)):
     return crud.get_post(db, post_id=post_id)
 @app.post("/posts", response_model=schemas.Post)
 async def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), user: schemas.User = Depends(get_current_active_user)):
-    return crud.create_post(db=db, post=post)
+    return crud.create_post(db=db, post=post, user_id=user.id)
 
 @app.get("/users/me/", response_model=schemas.User)
 async def read_users_me(current_user: schemas.User = Depends(get_current_active_user)):

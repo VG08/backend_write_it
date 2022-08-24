@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 
@@ -17,7 +18,7 @@ class Post(PostCreate):
     title: str
     content: str
     owner_id: int
-    created_at: str
+    created_at: datetime
 
     class Config:
         orm_mode = True
