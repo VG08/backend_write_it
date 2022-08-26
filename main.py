@@ -23,7 +23,7 @@ models.Base.metadata.create_all(bind=engine)
 # openssl rand -hex 32
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 3600
 
 # Dependency
 def get_db():
@@ -188,7 +188,7 @@ def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestF
     return {"access_token": access_token, "token_type": "bearer"}
 @app.get("/posts", response_model=list[schemas.Post])
 async def read_posts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_posts(db, skip=skip, limit=limit)
+    return crud.get_posts(db)
 
 @app.get("/posts/{post_id}", response_model=schemas.Post)
 async def read_post(post_id: int, db: Session = Depends(get_db)):
@@ -200,6 +200,13 @@ async def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), u
 @app.get("/users/me/", response_model=schemas.User)
 async def read_users_me(current_user: schemas.User = Depends(get_current_active_user)):
     return current_user
+
+@app.get("/user/{user_id}", response_model=schemas.User)
+async def read_user(user_id: int, db: Session = Depends(get_db)):
+    user = crud.get_user_by_id(db, user_id=user_id)
+    if user:
+        return user
+    raise HTTPException(status_code=404, detail="User not found in the database")
 
 
 @app.post("/users/create", response_model=schemas.User)

@@ -6,7 +6,8 @@ import models, schemas
 def get_user(db: Session, username: str):
     return db.query(models.User).filter(models.User.email == username).first()
 
-
+def get_user_by_id(db: Session, user_id: int):
+    return db.query(models.User).filter(models.User.id == user_id).first()
 def create_user(db: Session, user: schemas.UserCreate):
     db_user = models.User(email=user.email, hashed_password=user.password)
     db.add(db_user)
@@ -36,5 +37,5 @@ def update_post(db: Session, post_id: int, post: schemas.PostCreate):
     db.refresh(db_post)
     return db_post
 
-def get_posts(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Post).offset(skip).limit(limit).all()
+def get_posts(db: Session):
+    return db.query(models.Post).order_by(models.Post.id.desc()).all()
